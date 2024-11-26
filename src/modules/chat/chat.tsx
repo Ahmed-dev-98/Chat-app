@@ -1,54 +1,62 @@
 import ChatController from "./_components/chat-controller";
 import ChatNavbar from "./_components/chat-navbar";
-import UserCard from "./_components/user-card";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/app/services/firebase/firebase";
+import { db, FIREBASE_COLLECTIONS } from "@/app/services/firebase/firebase";
 import ChatContent from "./_components/chat-content";
 import { IUser } from "@/app/types/types";
+import { getAuth } from "firebase/auth";
+import { useSearchParams } from "react-router-dom";
+import Sidebar from "./_components/sidebar";
 
 const Chat = () => {
-  const [content, setContent] = useState<string>("");
   const [users, setUsers] = useState<IUser[]>([]);
+  const auth = getAuth();
+  const [searchParams] = useSearchParams();
   const fetchUsers = async () => {
     try {
-      // Reference the 'users' collection
-      const usersCollection = collection(db, "users");
-      // Fetch documents from the collection
+      const usersCollection = collection(db, FIREBASE_COLLECTIONS.USERS);
       const querySnapshot = await getDocs(usersCollection);
-      // Map the documents to extract data
-      const usersData = querySnapshot.docs.map((doc) => ({
-        id: doc.id, // Document ID
-        ...doc.data(), // Document data
-      }));
-      console.log(usersData, "sadasd");
+      const usersData = querySnapshot.docs.map(
+        (doc) =>
+          ({
+            uid: doc.id,
+            ...doc.data(),
+          } as IUser)
+      );
+      console.log(usersData);
 
-      setUsers(usersData as IUser[]); // Update the state with user data
+      setUsers(
+        usersData.filter(
+          (user) => user.email !== auth.currentUser?.email
+        ) as IUser[]
+      );
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
   useEffect(() => {
-    fetchUsers(); // Fetch users when the component mounts
+    fetchUsers();
   }, []);
 
   return (
-    <div className="w-full h-screen bg-slate-950">
+    <div className="w-full h-screen bg-[#0b141b]">
       <div className="w-full h-full flex ">
-        <div className="w-[25%]  h-full  rounded-tr-md rounded-br-md ">
-          <div className="flex flex-col  w-full overflow-y-scroll h-full">
-            {users?.map((user) => (
-              <UserCard key={user.id} user={user} />
-            ))}
-          </div>
-        </div>
-        {/* chat */}
+        {<Sidebar users={users} />}
 
-        <div className="w-[75%] h-full p-2 flex flex-col">
-          <ChatNavbar />
-          <ChatContent />
-          <ChatController setContent={setContent} content={content} />
-        </div>
+        {!searchParams.get("id") ? (
+          <div className="text-white h-full w-full flex justify-center items-center">
+            no data fount please select chat
+          </div>
+        ) : (
+          <div className="w-[75%] h-full p-2 flex flex-col gap-4 justify-between">
+            <ChatNavbar
+              user={users.find((user) => user.uid === searchParams.get("id"))}
+            />
+            <ChatContent />
+            <ChatController />
+          </div>
+        )}
       </div>
     </div>
   );

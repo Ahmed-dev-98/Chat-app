@@ -1,6 +1,7 @@
 export interface IMessage {
     id: string
     senderId: string
+    image: string
     text: string
     timestamp: {
         nanoseconds: number,
@@ -11,7 +12,9 @@ export interface IMessage {
 
 export interface IUser {
     email: string
-    id: string
+    displayName: string
+    avatar: string
+    uid: string
     isOnline: boolean
     lastSeen: {
         seconds: number, nanoseconds: number
