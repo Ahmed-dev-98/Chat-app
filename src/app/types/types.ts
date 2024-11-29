@@ -19,4 +19,5 @@ export interface IUser {
     lastSeen: {
         seconds: number, nanoseconds: number
     }
+    contacts: string[]
 }

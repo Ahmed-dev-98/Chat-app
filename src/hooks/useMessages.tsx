@@ -6,26 +6,23 @@ import { useEffect, useState } from "react";
 export const useMessages = (recipientId: string, currentUserId: string) => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
     if (!recipientId || !currentUserId) return;
-
     let unsubscribe: (() => void) | undefined;
-
     const fetchMessages = async () => {
       try {
-        // Get the query from your `getAllMessages` method
         const messagesQuery = await firebaseService.getAllMessages(
           recipientId,
           currentUserId
         );
 
-        // Attach the real-time listener
         unsubscribe = onSnapshot(
           messagesQuery,
           (querySnapshot) => {
-            const fetchedMessages = querySnapshot.docs.map((doc) => doc.data()) as IMessage[];
-            setMessages(fetchedMessages); // Update state with new messages
+            const fetchedMessages = querySnapshot.docs.map((doc) =>
+              doc.data()
+            ) as IMessage[];
+            setMessages(fetchedMessages);
             setIsLoading(false);
           },
           (error) => {

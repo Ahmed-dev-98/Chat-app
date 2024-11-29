@@ -12,6 +12,7 @@ const initialState: IUser = {
         seconds: 0,
         nanoseconds: 0
     },
+    contacts: []
 }
 
 const authSlice = createSlice({
@@ -25,6 +26,7 @@ const authSlice = createSlice({
             state.uid = action.payload.id ?? action.payload.uid;
             state.isOnline = action.payload.isOnline;
             state.lastSeen = action.payload.lastSeen;
+            state.contacts = action.payload.contacts
         },
         logout: (state) => {
             state.email = "";
@@ -32,17 +34,22 @@ const authSlice = createSlice({
             state.avatar = "";
             state.uid = "";
             state.isOnline = false;
+            state.contacts = []
             state.lastSeen = {
                 seconds: 0,
                 nanoseconds: 0
-            };
+            }
         },
+        updateUserContacts: (state, action) => {
+            state.contacts = action.payload
+        }
     },
 });
 export const selectAuth = (state: { auth: IUser }) => state.auth;
 export const {
     login,
     logout,
+    updateUserContacts
 } = authSlice.actions;
 
 

@@ -8,6 +8,7 @@ import { auth } from "@/app/services/firebase/firebase";
 import { getChatRoomId } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
 import firebaseService from "@/app/services/firebase/firebase.service";
+import { BsCheckAll, BsCheckLg } from "react-icons/bs";
 
 const UserCard = ({ user }: { user: IUser }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,6 +18,8 @@ const UserCard = ({ user }: { user: IUser }) => {
 
   useEffect(() => {
     if (user.uid) {
+      console.log("last message listned");
+
       const fetchLastMessage = async () => {
         const recipientDocId = user.uid;
         if (!recipientDocId || !auth.currentUser) return;
@@ -49,6 +52,16 @@ const UserCard = ({ user }: { user: IUser }) => {
     }
   }, [auth.currentUser, searchParams.get("id")]);
 
+  const getMessageStatus = (lastMessage: DocumentData) => {
+    if (lastMessage?.senderId !== user.uid && user.isOnline) {
+      return <BsCheckAll color="#979290" />;
+    } else if (lastMessage?.senderId !== user.uid && !user.isOnline) {
+      return <BsCheckLg color="#979290" />;
+    } else if (lastMessage?.senderId === user.uid && user.isOnline) {
+      return <BsCheckAll color="green" />;
+    }
+  };
+
   if (!user) return null;
   return (
     <div
@@ -56,13 +69,13 @@ const UserCard = ({ user }: { user: IUser }) => {
         setSearchParams({ id: user.uid });
         dispatch(assign(user));
       }}
-      className={`flex gap-2 items-center justify-center w-full px-3 py-5 text-white border-b min-h-[100px] ${
-        searchParams.get("id") === user.uid ? "bg-[#2b3842]" : ""
-      } hover:bg-[#2b3842] transition-all duration-300`}
+      className={`flex gap-2 items-center justify-center w-full p-2 text-white border-b min-h-[80px] ${
+        searchParams.get("id") === user.uid ? "bg-[#ededed]" : ""
+      } hover:bg-[#ededed] transition-all duration-300`}
     >
       <div className="">
         {" "}
-        <div className="w-[50px] h-[50px] rounded-full bg-red-100">
+        <div className="w-[50px] h-[50px] rounded-full bg-red-100 ">
           <img
             src={user.avatar}
             alt={user.displayName}
@@ -70,26 +83,41 @@ const UserCard = ({ user }: { user: IUser }) => {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-1 w-full">
+      <div className="flex flex-col  w-full">
         <div className="w-full flex justify-between items-center">
-          <h2>{user.displayName}</h2>
-          {lastMessage && (
-            <p>{formatLastSeen(lastMessage?.timestamp?.seconds)}</p>
-          )}
+          <h2 className="capitalize text-[#332319] font-semibold">
+            {user.displayName}
+          </h2>
+          <p
+            className={`${
+              user.isOnline ? "text-green-800 animate-pulse" : "text-red-600"
+            } font-bold text-xs rounded-full   text-[#b6b6b6]`}
+          >
+            {user.isOnline ? "Online" : "Offline"}
+          </p>
         </div>
-        <div>
-          {lastMessage?.image ? (
-            <img
-              src={lastMessage?.image}
-              alt="message"
-              className="w-[30px] h-[30px] object-cover rounded-md"
-            />
-          ) : (
-            <h2>
-              {lastMessage?.text?.length > 25
-                ? lastMessage?.text?.slice(0, 25) + "..."
-                : lastMessage?.text}
-            </h2>
+        <div className="w-full flex justify-between items-center">
+          <div className="flex items-center justify-start gap-1">
+            {" "}
+            {lastMessage && getMessageStatus(lastMessage)}
+            {lastMessage?.image ? (
+              <img
+                src={lastMessage?.image}
+                alt="message"
+                className="w-[30px] h-[30px] object-cover rounded-md"
+              />
+            ) : (
+              <h2 className="text-xs font-medium text-[#979290]">
+                {lastMessage?.text?.length > 25
+                  ? lastMessage?.text?.slice(0, 25) + "..."
+                  : lastMessage?.text}
+              </h2>
+            )}
+          </div>
+          {lastMessage && (
+            <p className="text-xs font-medium text-[#b6b6b6]">
+              {formatLastSeen(lastMessage?.timestamp?.seconds)}
+            </p>
           )}
         </div>
       </div>

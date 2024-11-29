@@ -1,9 +1,10 @@
-import { addDoc, collection, doc, DocumentData, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc } from "firebase/firestore";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { addDoc, arrayUnion, collection, doc, DocumentData, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db, provider } from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
 import { IUser } from "@/app/types/types";
 import { getChatRoomId } from "@/lib/utils";
-import { FIREBASE_COLLECTIONS } from "@/app/constants/firebase-collections";
+import { FIREBASE_COLLECTIONS, } from "@/app/constants/firebase-enums";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 class firebaseService {
@@ -13,7 +14,6 @@ class firebaseService {
             FIREBASE_COLLECTIONS.USERS,
             uid
         );
-
         return userDocRef
     }
 
@@ -42,8 +42,12 @@ class firebaseService {
             orderBy("timestamp")
         );
     }
-    public async sendMessage(senderId: string, recipientid: string, payload: DocumentData) {
-        const chatRoomId = getChatRoomId(senderId, recipientid);
+    public async sendMessage(
+        senderId: string,
+        recipientId: string,
+        payload: DocumentData
+    ) {
+        const chatRoomId = getChatRoomId(senderId, recipientId);
         await addDoc(
             collection(
                 db,
@@ -53,7 +57,34 @@ class firebaseService {
             ),
             payload
         );
+        if (payload.image) {
+            console.log(payload.image, "called");
+            const chatMediaDocRef = doc(
+                db,
+                FIREBASE_COLLECTIONS.CHAT_ROOMS,
+                chatRoomId,
+                FIREBASE_COLLECTIONS.CHAT_MEDIA,
+
+                "media"
+            );
+            try {
+                await updateDoc(chatMediaDocRef, {
+                    media: arrayUnion(payload.image),
+                });
+            } catch (error: any) {
+                if (error.code === "not-found") {
+
+                    await setDoc(chatMediaDocRef, {
+                        media: [payload.image],
+                    });
+                } else {
+                    console.error("Error updating chatMedia:", error);
+                    throw error;
+                }
+            }
+        }
     }
+
     public async updateUser(uid: string, payload: Partial<IUser>) {
         const userDocRef = await this.getUserDocRef(uid);
         await updateDoc(userDocRef, payload);
@@ -94,7 +125,7 @@ class firebaseService {
 
     public async uploadMedia(imageUploaderId: string, media: File, targetedFolder: string) {
         const storage = getStorage();
-        const imgRef = ref(storage, `${targetedFolder}/${imageUploaderId}.jpg`);
+        const imgRef = ref(storage, `${targetedFolder}/${imageUploaderId}.${media.type.split("/")[1]}`);
         await uploadBytes(imgRef, media);
         const imgUrl = await getDownloadURL(imgRef);
         return imgUrl

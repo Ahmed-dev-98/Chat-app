@@ -3,8 +3,14 @@ import { serverTimestamp, getDoc, doc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "@/app/services/firebase/firebase";
 import { useSearchParams } from "react-router-dom";
-import { FIREBASE_COLLECTIONS } from "@/app/constants/firebase-collections";
+import {
+  FIREBASE_COLLECTIONS,
+  FIREBASE_STORAGE,
+} from "@/app/constants/firebase-enums";
 import firebaseService from "@/app/services/firebase/firebase.service";
+import { Button } from "@/components/ui/button";
+import { IoSend } from "react-icons/io5";
+import { GrAttachment } from "react-icons/gr";
 
 const ChatController = () => {
   const [message, setMessage] = useState<string>("");
@@ -63,7 +69,7 @@ const ChatController = () => {
         imageUrl = await firebaseService.uploadMedia(
           user.uid,
           selectedImage,
-          "messages"
+          FIREBASE_STORAGE.MESSAGES
         );
       }
 
@@ -73,7 +79,6 @@ const ChatController = () => {
         senderId: user?.uid,
         timestamp: serverTimestamp(),
       });
-    
 
       setMessage("");
       setSelectedImage(null);
@@ -84,50 +89,41 @@ const ChatController = () => {
   };
 
   return (
-    <div className="max-h-[20%] border shadow-sm w-full flex justify-between px-4 items-center bg-gray-800">
-      {/* Message Input */}
+    <div className="max-h-[10%] border shadow-sm w-full flex justify-between p-4 items-center bg-[#ededed]">
+      {/* Message Input */}{" "}
+      <div className="h-full flex gap-2 items-center">
+        {previewImage && (
+          <img
+            src={previewImage}
+            alt="Selected preview"
+            className="w-10 h-10 object-cover rounded-md"
+          />
+        )}
+        <Button
+          variant={"ghost"}
+          onClick={() => document.getElementById("upload-image")?.click()}
+        >
+          <GrAttachment />
+
+          <input
+            onChange={handleFileChange}
+            id="upload-image"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            multiple={false}
+          />
+        </Button>
+      </div>
       <textarea
         onChange={(e) => setMessage(e.target.value)}
         value={message}
         placeholder="Type your message..."
-        className="resize-none max-h-[300px] bg-transparent text-white border-0 outline-none w-[99%] px-4 py-2 rounded-lg   overflow-y-auto break-words"
+        className="resize-none max-h-[50px] bg-white  border-0 outline-none w-[99%] px-4 py-2 rounded-lg   overflow-y-auto break-words"
       ></textarea>
-
-      {/* Upload and Send Actions */}
-      <div className="flex gap-4 justify-center items-center h-full w-[20%]">
-        {/* Upload Section */}
-        <div className="h-full flex gap-2 items-center">
-          {previewImage && (
-            <img
-              src={previewImage}
-              alt="Selected preview"
-              className="w-10 h-10 object-cover rounded-md"
-            />
-          )}
-          <button
-            onClick={() => document.getElementById("upload-image")?.click()}
-            className="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg"
-          >
-            Upload
-            <input
-              onChange={handleFileChange}
-              id="upload-image"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              multiple={false}
-            />
-          </button>
-        </div>
-
-        {/* Send Section */}
-        <button
-          onClick={(e) => sendMessage(e)}
-          className="text-white bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg"
-        >
-          Send
-        </button>
-      </div>
+      <Button variant={"ghost"} onClick={(e) => sendMessage(e)}>
+        <IoSend />
+      </Button>
     </div>
   );
 };

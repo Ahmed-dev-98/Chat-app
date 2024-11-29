@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/app/constants/routes";
 import firebaseService from "@/app/services/firebase/firebase.service";
+import { Button } from "@/components/ui/button";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -42,12 +43,13 @@ const Register = () => {
         uid: user.uid,
         displayName: displayName || "New User",
         email: email,
-        isOnline: true,
+        isOnline: false,
         lastSeen: {
           seconds: new Date().getTime(),
           nanoseconds: new Date().getTime() * 1000,
         },
         avatar,
+        contacts: [],
       };
       await firebaseService.setUserToFirestoreDb(user.uid, userData);
       navigate(ROUTES.LOGIN);
@@ -93,12 +95,12 @@ const Register = () => {
             accept="image/*"
             className="border p-2 rounded text-black"
           />
-          <button
+          <Button
             type="submit"
             className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
           >
             Sign Up
-          </button>
+          </Button>
           {error && <p className="text-red-500 w-full text-center">{error}</p>}
           {success && (
             <p className="text-green-500 w-full text-center">{success}</p>

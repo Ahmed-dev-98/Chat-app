@@ -26,7 +26,7 @@ const Chat = () => {
   if (isLoading) return <div>loading</div>;
   if (!users) return <div>no users found</div>;
   return (
-    <div className="w-full h-screen bg-[#0b141b]">
+    <div className="w-full h-screen bg-white">
       <div className="w-full h-full flex ">
         {<Sidebar users={users} />}
 
@@ -35,7 +35,7 @@ const Chat = () => {
             no data fount please select chat
           </div>
         ) : (
-          <div className="w-[75%] h-full p-2 flex flex-col gap-4 justify-between">
+          <div className="w-[75%] h-full  flex flex-col  justify-between">
             <ChatNavbar
               user={users.find((user) => user.uid === searchParams.get("id"))}
             />

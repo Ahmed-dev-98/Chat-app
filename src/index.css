@@ -96,3 +96,7 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #063477;
 }
+
+.whatsAppBg {
+  background-image: url("./assets/bg-chat-room.png");
+}

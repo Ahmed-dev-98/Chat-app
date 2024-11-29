@@ -4,6 +4,7 @@ import { ROUTES } from "@/app/constants/routes";
 import { useAppDispatch } from "@/store";
 import { login } from "@/store/slices/auth.slice";
 import firebaseService from "@/app/services/firebase/firebase.service";
+import { Button } from "@/components/ui/button";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -76,27 +77,27 @@ const Login = () => {
             required
           />
           <div className="w-full flex items-center justify-center gap-2">
-            <button
+            <Button
               type="submit"
               className="bg-blue-500 flex-1 text-white py-2 rounded hover:bg-blue-600"
             >
               Sign In
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => navigate(ROUTES.REGISTER)}
               type="button"
               className="bg-blue-500 flex-1 text-white py-2 rounded hover:bg-blue-600"
             >
               Register
-            </button>
+            </Button>
           </div>
-          <button
+          <Button
             onClick={googleAuth}
             type="submit"
             className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
           >
             Sign In with google
-          </button>
+          </Button>
           {error && <p className="text-red-500 w-full text-center">{error}</p>}
           {success && (
             <p className="text-green-500 w-full text-center">{success}</p>
