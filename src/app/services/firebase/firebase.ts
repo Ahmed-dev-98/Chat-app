@@ -16,9 +16,3 @@ export const firebaseApp = initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
 export const provider = new GoogleAuthProvider();
-export enum FIREBASE_COLLECTIONS {
-    USERS = "users",
-    CHAT_ROOMS = "chatRooms",
-    MESSAGES = "messages"
-
-}

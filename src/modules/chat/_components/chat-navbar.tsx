@@ -1,4 +1,5 @@
-import { db, FIREBASE_COLLECTIONS } from "@/app/services/firebase/firebase";
+import { FIREBASE_COLLECTIONS } from "@/app/constants/firebase-collections";
+import { db } from "@/app/services/firebase/firebase";
 import { IUser } from "@/app/types/types";
 import { formatLastSeen } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
@@ -17,7 +18,15 @@ const ChatNavbar = ({ user }: { user: IUser | undefined }) => {
       const unsubscribe = onSnapshot(recipientDocRef, (doc) => {
         if (doc.exists()) {
           const data = doc.data();
-          dispatch(assign(data));
+          dispatch(
+            assign({
+              ...data,
+              lastSeen: {
+                seconds: data.lastSeen.seconds,
+                nanoseconds: data.lastSeen.nanoseconds,
+              },
+            })
+          );
         }
       });
       return () => unsubscribe();
@@ -34,10 +43,11 @@ const ChatNavbar = ({ user }: { user: IUser | undefined }) => {
       </div>
       <div className="flex-col flex justify-between items-start">
         <h2 className="text-xl">{reciver?.displayName}</h2>
-        <p>
+        <p className="text-xs">
           {reciver?.isOnline
             ? "Online"
-            : formatLastSeen(reciver?.lastSeen.seconds)}
+            : "Last seen at " +
+              formatLastSeen(reciver?.lastSeen.seconds / 1000)}
         </p>
       </div>
     </div>

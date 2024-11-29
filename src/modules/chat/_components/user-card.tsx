@@ -2,24 +2,12 @@ import { IMessage, IUser } from "@/app/types/types";
 import { formatLastSeen } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
 import { assign } from "@/store/slices/reciver.slice";
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  orderBy,
-  limit,
-  onSnapshot,
-  DocumentData,
-} from "firebase/firestore";
+import { onSnapshot, DocumentData } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import {
-  auth,
-  db,
-  FIREBASE_COLLECTIONS,
-} from "@/app/services/firebase/firebase";
+import { auth } from "@/app/services/firebase/firebase";
 import { getChatRoomId } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
+import firebaseService from "@/app/services/firebase/firebase.service";
 
 const UserCard = ({ user }: { user: IUser }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,48 +16,37 @@ const UserCard = ({ user }: { user: IUser }) => {
   const [, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLastMessage = async () => {
-      const recipientDocId = user.uid;
-      if (!recipientDocId || !auth.currentUser) return;
+    if (user.uid) {
+      const fetchLastMessage = async () => {
+        const recipientDocId = user.uid;
+        if (!recipientDocId || !auth.currentUser) return;
 
-      try {
-        const recipientDoc = await getDoc(
-          doc(db, FIREBASE_COLLECTIONS.USERS, recipientDocId)
-        );
-        if (!recipientDoc.exists()) {
-          console.error("Recipient document not found");
-          return;
+        try {
+          const recipientDoc = await firebaseService.getUserDoc(recipientDocId);
+          const chatRoomId = getChatRoomId(
+            auth.currentUser.uid,
+            recipientDoc.uid
+          );
+          const lastMessage = await firebaseService.getLastMessage(chatRoomId);
+          const unsubscribe = onSnapshot(
+            lastMessage,
+            (querySnapshot) => {
+              const lastMessageData = querySnapshot.docs[0]?.data() || null;
+              setLastMessage(lastMessageData);
+              setLoading(false);
+            },
+            (error) => {
+              console.error("Error fetching last message:", error);
+            }
+          );
+          return () => unsubscribe();
+        } catch (error) {
+          console.error("Error fetching recipient UID:", error);
         }
-        const recipientUid = recipientDoc.data().uid;
-        const chatRoomId = getChatRoomId(auth.currentUser.uid, recipientUid);
-        const lastMessageQuery = query(
-          collection(
-            db,
-            FIREBASE_COLLECTIONS.CHAT_ROOMS,
-            chatRoomId,
-            FIREBASE_COLLECTIONS.MESSAGES
-          ),
-          orderBy("timestamp", "desc"),
-          limit(1)
-        );
-        const unsubscribe = onSnapshot(
-          lastMessageQuery,
-          (querySnapshot) => {
-            const lastMessageData = querySnapshot.docs[0]?.data() || null;
-            setLastMessage(lastMessageData);
-            setLoading(false);
-          },
-          (error) => {
-            console.error("Error fetching last message:", error);
-          }
-        );
-        return () => unsubscribe();
-      } catch (error) {
-        console.error("Error fetching recipient UID:", error);
-      }
-    };
+      };
 
-    fetchLastMessage();
+      fetchLastMessage();
+    }
   }, [auth.currentUser, searchParams.get("id")]);
 
   if (!user) return null;
@@ -96,7 +73,9 @@ const UserCard = ({ user }: { user: IUser }) => {
       <div className="flex flex-col gap-1 w-full">
         <div className="w-full flex justify-between items-center">
           <h2>{user.displayName}</h2>
-          <p>{formatLastSeen(lastMessage?.timestamp?.seconds)}</p>
+          {lastMessage && (
+            <p>{formatLastSeen(lastMessage?.timestamp?.seconds)}</p>
+          )}
         </div>
         <div>
           {lastMessage?.image ? (

@@ -1,16 +1,10 @@
 import { useState } from "react";
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-  getDoc,
-  doc,
-} from "firebase/firestore";
+import { serverTimestamp, getDoc, doc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { db, FIREBASE_COLLECTIONS } from "@/app/services/firebase/firebase";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getChatRoomId } from "@/lib/utils";
+import { db } from "@/app/services/firebase/firebase";
 import { useSearchParams } from "react-router-dom";
+import { FIREBASE_COLLECTIONS } from "@/app/constants/firebase-collections";
+import firebaseService from "@/app/services/firebase/firebase.service";
 
 const ChatController = () => {
   const [message, setMessage] = useState<string>("");
@@ -18,7 +12,6 @@ const ChatController = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
   const auth = getAuth();
-  const storage = getStorage();
   const user = auth.currentUser;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,31 +57,23 @@ const ChatController = () => {
       const recipientUid = await getRecipientUid(recipientDocId);
       if (!recipientUid || !user?.uid) return;
 
-      let imageUrl = null;
+      let imageUrl;
 
       if (selectedImage) {
-        const imageRef = ref(
-          storage,
-          `messages/${Date.now()}_${selectedImage.name}`
+        imageUrl = await firebaseService.uploadMedia(
+          user.uid,
+          selectedImage,
+          "messages"
         );
-        const uploadResult = await uploadBytes(imageRef, selectedImage);
-        imageUrl = await getDownloadURL(uploadResult.ref);
       }
-      const chatRoomId = getChatRoomId(user?.uid, recipientUid);
-      await addDoc(
-        collection(
-          db,
-          FIREBASE_COLLECTIONS.CHAT_ROOMS,
-          chatRoomId,
-          FIREBASE_COLLECTIONS.MESSAGES
-        ),
-        {
-          text: message || null,
-          image: imageUrl || null,
-          senderId: user?.uid,
-          timestamp: serverTimestamp(),
-        }
-      );
+
+      await firebaseService.sendMessage(user?.uid, recipientUid, {
+        text: message || null,
+        image: imageUrl || null,
+        senderId: user?.uid,
+        timestamp: serverTimestamp(),
+      });
+    
 
       setMessage("");
       setSelectedImage(null);

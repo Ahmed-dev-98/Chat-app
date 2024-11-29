@@ -1,15 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import {
-  auth,
-  db,
-  FIREBASE_COLLECTIONS,
-} from "@/app/services/firebase/firebase";
-import { doc, setDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/app/constants/routes";
+import firebaseService from "@/app/services/firebase/firebase.service";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -17,12 +10,18 @@ const Register = () => {
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [avatar, setAvatar] = useState<File | null>(null);
+  const [avatar, setAvatar] = useState<string>("");
   const navigate = useNavigate();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setAvatar(e.target.files[0]);
+      const avatar = e.target.files[0];
+      await firebaseService
+        .uploadMedia(new Date().getTime().toString(), avatar, "avatars")
+        .then((url) => {
+          setAvatar(url);
+        })
+        .catch((err) => console.error(err));
     }
   };
 
@@ -34,32 +33,25 @@ const Register = () => {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await firebaseService.register(email, password);
       const user = userCredential.user;
       setSuccess("User registered successfully!");
       setError("");
-      const storage = getStorage();
-      const avatarRef = ref(storage, `avatars/${user.uid}_avatar.jpg`);
-      await uploadBytes(avatarRef, avatar);
-      const avatarUrl = await getDownloadURL(avatarRef);
 
       const userData = {
         uid: user.uid,
         displayName: displayName || "New User",
-        email: user.email,
+        email: email,
         isOnline: true,
-        lastSeen: new Date(),
-        avatar: avatarUrl,
+        lastSeen: {
+          seconds: new Date().getTime(),
+          nanoseconds: new Date().getTime() * 1000,
+        },
+        avatar,
       };
-      await setDoc(doc(db, FIREBASE_COLLECTIONS.USERS, user.uid), userData);
-
+      await firebaseService.setUserToFirestoreDb(user.uid, userData);
       navigate(ROUTES.LOGIN);
-
-      setAvatar(null);
+      setAvatar("");
     } catch (err: any) {
       setError(err.message);
       setSuccess("");

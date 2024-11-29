@@ -22,7 +22,7 @@ const authSlice = createSlice({
             state.email = action.payload.email;
             state.displayName = action.payload.displayName;
             state.avatar = action.payload.avatar;
-            state.uid = action.payload.id;
+            state.uid = action.payload.id ?? action.payload.uid;
             state.isOnline = action.payload.isOnline;
             state.lastSeen = action.payload.lastSeen;
         },

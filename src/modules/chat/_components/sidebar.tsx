@@ -1,35 +1,24 @@
-import { signOut } from "firebase/auth";
 import UserCard from "./user-card";
 import { IUser } from "@/app/types/types";
-import { doc, updateDoc } from "firebase/firestore";
-import {
-  auth,
-  db,
-  FIREBASE_COLLECTIONS,
-} from "@/app/services/firebase/firebase";
-import { useAppSelector } from "@/store";
-import { selectAuth } from "@/store/slices/auth.slice";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { logout, selectAuth } from "@/store/slices/auth.slice";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/app/constants/routes";
+import firebaseService from "@/app/services/firebase/firebase.service";
 
 const Sidebar = ({ users }: { users: IUser[] }) => {
   const signedUser = useAppSelector(selectAuth);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const handleLogout = async () => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        return navigate(ROUTES.LOGIN);
-      }
 
-      const userDocRef = doc(db, FIREBASE_COLLECTIONS.USERS, user.uid);
-      await updateDoc(userDocRef, { isOnline: false, lastSeen: new Date() });
-      await signOut(auth);
-      navigate(ROUTES.LOGIN);
-    } catch (error) {
-      console.error("Error during logout:", error);
-      navigate(ROUTES.LOGIN);
-    }
+    await firebaseService
+      .logOut(signedUser.uid)
+      .then(() => {
+        dispatch(logout());
+        navigate(ROUTES.LOGIN);
+      })
+      .catch((error) => console.error(error));
   };
 
   return (

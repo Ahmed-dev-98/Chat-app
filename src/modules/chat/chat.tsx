@@ -1,44 +1,30 @@
 import ChatController from "./_components/chat-controller";
 import ChatNavbar from "./_components/chat-navbar";
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db, FIREBASE_COLLECTIONS } from "@/app/services/firebase/firebase";
 import ChatContent from "./_components/chat-content";
-import { IUser } from "@/app/types/types";
-import { getAuth } from "firebase/auth";
 import { useSearchParams } from "react-router-dom";
 import Sidebar from "./_components/sidebar";
+import firebaseService from "@/app/services/firebase/firebase.service";
+import useSWR from "swr";
+import { useAppSelector } from "@/store";
+import { selectAuth } from "@/store/slices/auth.slice";
+import toast from "react-hot-toast";
 
 const Chat = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
-  const auth = getAuth();
+  const signedUser = useAppSelector(selectAuth);
   const [searchParams] = useSearchParams();
   const fetchUsers = async () => {
-    try {
-      const usersCollection = collection(db, FIREBASE_COLLECTIONS.USERS);
-      const querySnapshot = await getDocs(usersCollection);
-      const usersData = querySnapshot.docs.map(
-        (doc) =>
-          ({
-            uid: doc.id,
-            ...doc.data(),
-          } as IUser)
-      );
-      console.log(usersData);
-
-      setUsers(
-        usersData.filter(
-          (user) => user.email !== auth.currentUser?.email
-        ) as IUser[]
-      );
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
+    return await firebaseService
+      .getAllUsers()
+      .then((data) => {
+        toast.success("users fetched successfully");
+        return data.filter((user) => user.email !== signedUser?.email);
+      })
+      .catch((err) => console.log(err));
   };
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const { data: users, isLoading } = useSWR("users", fetchUsers);
 
+  if (isLoading) return <div>loading</div>;
+  if (!users) return <div>no users found</div>;
   return (
     <div className="w-full h-screen bg-[#0b141b]">
       <div className="w-full h-full flex ">
