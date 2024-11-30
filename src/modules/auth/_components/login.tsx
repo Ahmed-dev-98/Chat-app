@@ -5,11 +5,14 @@ import { useAppDispatch } from "@/store";
 import { login } from "@/store/slices/auth.slice";
 import firebaseService from "@/app/services/firebase/firebase.service";
 import { Button } from "@/components/ui/button";
+import { BsEyeFill } from "react-icons/bs";
+import { BsEyeSlashFill } from "react-icons/bs";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -68,14 +71,30 @@ const Login = () => {
             className="border p-2 rounded text-black"
             required
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border p-2 rounded text-black"
-            required
-          />
+          <div className="w-full flex justify-between items-center bg-white p-2 border rounded text-black">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full border-0 outline-none"
+            />
+            {showPassword ? (
+              <BsEyeFill
+                onClick={() => setShowPassword(!showPassword)}
+                color="black"
+                size={20}
+              />
+            ) : (
+              <BsEyeSlashFill
+                onClick={() => setShowPassword(!showPassword)}
+                className="cursor-pointer"
+                color="black"
+                size={20}
+              />
+            )}
+          </div>
           <div className="w-full flex items-center justify-center gap-2">
             <Button
               type="submit"

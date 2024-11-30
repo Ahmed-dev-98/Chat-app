@@ -17,6 +17,7 @@ const ChatController = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -58,7 +59,7 @@ const ChatController = () => {
       console.error("Recipient ID not provided");
       return;
     }
-
+    setLoading(true);
     try {
       const recipientUid = await getRecipientUid(recipientDocId);
       if (!recipientUid || !user?.uid) return;
@@ -79,7 +80,7 @@ const ChatController = () => {
         senderId: user?.uid,
         timestamp: serverTimestamp(),
       });
-
+      setLoading(false);
       setMessage("");
       setSelectedImage(null);
       setPreviewImage(null);
@@ -100,6 +101,7 @@ const ChatController = () => {
           />
         )}
         <Button
+          disabled={loading}
           variant={"ghost"}
           onClick={() => document.getElementById("upload-image")?.click()}
         >
@@ -119,9 +121,13 @@ const ChatController = () => {
         onChange={(e) => setMessage(e.target.value)}
         value={message}
         placeholder="Type your message..."
-        className="resize-none max-h-[50px] bg-white  border-0 outline-none w-[99%] px-4 py-2 rounded-lg   overflow-y-auto break-words"
+        className="resize-none max-h-[50px] bg-white  border-0 outline-none w-[99%] px-4 py-2 rounded-md   overflow-y-auto break-words"
       ></textarea>
-      <Button variant={"ghost"} onClick={(e) => sendMessage(e)}>
+      <Button
+        disabled={loading}
+        variant={"ghost"}
+        onClick={(e) => sendMessage(e)}
+      >
         <IoSend />
       </Button>
     </div>

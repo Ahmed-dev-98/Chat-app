@@ -35,7 +35,7 @@ const ReciverInfo = () => {
 
   return (
     <div className={`h-full overflow-hidden  flex flex-col  gap-3 `}>
-      <div className="w-[250px] mx-auto h-[250px]  rounded-full">
+      <div className="w-[100px] h-[100px] lg:w-[250px] mx-auto lg:h-[250px]  rounded-full">
         <img
           src={reciver.avatar}
           className="w-full h-full rounded-full object-cover object-top"
@@ -46,13 +46,13 @@ const ReciverInfo = () => {
         <p className="text-xl font-semibold">{reciver.displayName}</p>
         <p className="text-sm font-semibold text-gray-500">{reciver.email}</p>
       </div>
-      <div className="w-full  grid grid-cols-3 gap-1 overflow-y-scroll  items-start justify-start h-[calc(100%-250px)]">
+      <div className="w-full  grid grid-cols-2 lg:grid-cols-3 gap-1 overflow-y-scroll  items-start justify-start h-[calc(100%-100px)] lg:h-[calc(100%-250px)]">
         {media?.map((item) => (
-          <ImageDialog className="w-full h-full" imgSrc={item}>
+          <ImageDialog className="rounded-md  h-[100px]" imgSrc={item}>
             <img
               src={item}
               alt=""
-              className="w-full h-full object-cover object-top"
+              className="w-full h-full object-cover rounded-md object-top"
             />
           </ImageDialog>
         ))}

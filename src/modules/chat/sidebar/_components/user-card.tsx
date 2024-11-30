@@ -3,14 +3,20 @@ import { formatLastSeen } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
 import { assign } from "@/store/slices/reciver.slice";
 import { onSnapshot, DocumentData } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { auth } from "@/app/services/firebase/firebase";
 import { getChatRoomId } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
 import firebaseService from "@/app/services/firebase/firebase.service";
 import { BsCheckAll, BsCheckLg } from "react-icons/bs";
 
-const UserCard = ({ user }: { user: IUser }) => {
+const UserCard = ({
+  user,
+  setOpenSheet,
+}: {
+  setOpenSheet?: React.Dispatch<React.SetStateAction<boolean>>;
+  user: IUser;
+}) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const [lastMessage, setLastMessage] = useState<DocumentData | IMessage>({});
@@ -18,8 +24,6 @@ const UserCard = ({ user }: { user: IUser }) => {
 
   useEffect(() => {
     if (user.uid) {
-      console.log("last message listned");
-
       const fetchLastMessage = async () => {
         const recipientDocId = user.uid;
         if (!recipientDocId || !auth.currentUser) return;
@@ -68,6 +72,7 @@ const UserCard = ({ user }: { user: IUser }) => {
       onClick={() => {
         setSearchParams({ id: user.uid });
         dispatch(assign(user));
+        if (setOpenSheet) setOpenSheet(false);
       }}
       className={`flex gap-2 items-center justify-center w-full p-2 text-white border-b min-h-[80px] ${
         searchParams.get("id") === user.uid ? "bg-[#ededed]" : ""
@@ -79,13 +84,13 @@ const UserCard = ({ user }: { user: IUser }) => {
           <img
             src={user.avatar}
             alt={user.displayName}
-            className="w-full h-full rounded-full md:bg-current object-cover"
+            className="w-full h-full rounded-full lg:bg-current object-cover"
           />
         </div>
       </div>
       <div className="flex flex-col  w-full">
         <div className="w-full flex justify-between items-center">
-          <h2 className="capitalize text-[#332319] font-semibold">
+          <h2 className="capitalize text-[#332319] font-semibold text-nowrap">
             {user.displayName}
           </h2>
           <p
