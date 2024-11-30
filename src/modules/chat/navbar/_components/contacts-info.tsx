@@ -39,7 +39,7 @@ const ContactsInfo = ({
       <SheetTrigger onClick={() => setOpenSheet(true)}>
         {triggerComponent}
       </SheetTrigger>
-      <SheetContent side={"left"} className="w-full py-12">
+      <SheetContent side={"left"} className="w-full py-12 px-2">
         <div className="flex flex-col  justify-start  w-full overflow-y-scroll no-visible-scrollbar h-[95%]">
           {users
             ?.filter((u) => signedUser.contacts?.includes(u.uid))
@@ -64,8 +64,13 @@ const ContactsInfo = ({
           </Avatar>
           <div className="flex flex-col  justify-start items-start">
             <p className="text-xs font-semibold">{signedUser.displayName}</p>
-            <p className="text-xs font-semibold text-gray-500">
-              {signedUser.email}
+            <p
+              title={signedUser.email}
+              className="text-xs font-semibold text-gray-500"
+            >
+              {signedUser.email.length > 20
+                ? `${signedUser.email.slice(0, 20)}...`
+                : signedUser.email}
             </p>
           </div>
           <div className="flex justify-center items-center gap-2 ms-auto">

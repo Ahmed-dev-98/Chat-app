@@ -47,8 +47,10 @@ const SidebarHeader = ({ users }: { users: IUser[] }) => {
         </Avatar>
         <div className="flex flex-col  justify-start items-start">
           <p className="text-xs font-semibold">{signedUser.displayName}</p>
-          <p className="text-xs font-semibold text-gray-500">
-            {signedUser.email}
+          <p title={signedUser.email} className="text-xs font-semibold text-gray-500">
+            {signedUser.email.length > 20
+              ? `${signedUser.email.slice(0, 25)}...`
+              : signedUser.email}
           </p>
         </div>
       </div>

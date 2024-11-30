@@ -57,6 +57,7 @@ const UserCard = ({
   }, [auth.currentUser, searchParams.get("id")]);
 
   const getMessageStatus = (lastMessage: DocumentData) => {
+    // this also need to be modified
     if (lastMessage?.senderId !== user.uid && user.isOnline) {
       return <BsCheckAll color="#979290" />;
     } else if (lastMessage?.senderId !== user.uid && !user.isOnline) {
@@ -74,7 +75,7 @@ const UserCard = ({
         dispatch(assign(user));
         if (setOpenSheet) setOpenSheet(false);
       }}
-      className={`flex gap-2 items-center justify-center w-full p-2 text-white border-b min-h-[80px] ${
+      className={`flex gap-2 items-center rounded-md justify-center w-full p-2 text-white border-b min-h-[80px] ${
         searchParams.get("id") === user.uid ? "bg-[#ededed]" : ""
       } hover:bg-[#ededed] transition-all duration-300`}
     >

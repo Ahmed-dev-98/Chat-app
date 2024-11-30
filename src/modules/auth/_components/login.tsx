@@ -47,8 +47,8 @@ const Login = () => {
           login({
             ...data,
             lastSeen: {
-              seconds: data.lastSeen.seconds,
-              nanoseconds: data.lastSeen.nanoseconds,
+              seconds: new Date().getTime(),
+              nanoseconds: new Date().getTime() * 1000,
             },
           })
         );

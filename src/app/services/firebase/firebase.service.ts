@@ -58,7 +58,6 @@ class firebaseService {
             payload
         );
         if (payload.image) {
-            console.log(payload.image, "called");
             const chatMediaDocRef = doc(
                 db,
                 FIREBASE_COLLECTIONS.CHAT_ROOMS,
@@ -147,12 +146,39 @@ class firebaseService {
         return mediaData[0]?.media
     }
     public async signInWithGoogle() {
-        return await signInWithPopup(auth, provider).then(async (data) => {
-            return await this.updateUser(data.user.uid, { isOnline: true });
+        return await signInWithPopup(auth, provider).then(async (result) => {
+            const user = result.user;
+            const userRef = await this.getUserDocRef(user.uid);
+            const userDoc = await getDoc(userRef);
+
+            if (userDoc.exists()) {
+                await updateDoc(userRef, { isOnline: true });
+                localStorage.setItem('accessToken', user.accessToken);
+                return userDoc.data()
+            } else {
+                const userData = {
+                    uid: user.uid,
+                    displayName: user.displayName || "New User",
+                    email: user.email || "",
+                    isOnline: false,
+                    lastSeen: {
+                        seconds: new Date().getTime(),
+                        nanoseconds: new Date().getTime() * 1000,
+                    },
+                    avatar: user.photoURL || "",
+                    contacts: [],
+                };
+
+                await this.setUserToFirestoreDb(user.uid, userData);
+                return userData
+            }
+
         })
     }
     public async signInWithCredentials(email: string, password: string) {
         return await signInWithEmailAndPassword(auth, email, password).then(async (data) => {
+            localStorage.setItem('accessToken', data.user.accessToken);
+
             return await this.updateUser(data.user.uid, { isOnline: true });
         })
 
@@ -165,6 +191,7 @@ class firebaseService {
             }
         });
         await signOut(auth);
+        localStorage.removeItem('accessToken');
     }
 }
 

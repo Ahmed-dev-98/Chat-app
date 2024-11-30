@@ -31,6 +31,7 @@ const NewMessageDialog = ({
   const signedUser = useAppSelector(selectAuth);
   const handleStartMessage = async () => {
     if (selectedUser) {
+
       await firebaseService.updateUser(signedUser.uid, {
         contacts: [...signedUser.contacts, selectedUser.uid],
       });

@@ -5,6 +5,7 @@ import Login from "@/modules/auth/_components/login";
 import LandingPage from "@/modules/auth/_components/landing-page";
 import Register from "@/modules/auth/_components/register";
 import Chat from "@/modules/chat/chat-layout/chat";
+import ProtectedRoute from "@/modules/auth/protected-route";
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
   },
   {
     path: ROUTES.CHAT_LAYOUT,
-    element: <Chat />,
+    element: (
+      <ProtectedRoute>
+        <Chat />
+      </ProtectedRoute>
+    ),
   },
 ]);

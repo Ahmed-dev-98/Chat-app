@@ -24,8 +24,9 @@ function App() {
               login({
                 ...data,
                 lastSeen: {
-                  seconds: data.lastSeen.seconds,
-                  nanoseconds: data.lastSeen.nanoseconds,
+                  seconds: data?.lastSeen?.seconds ?? new Date().getTime(),
+                  nanoseconds:
+                    data?.lastSeen?.nanoseconds ?? new Date().getTime() * 1000,
                 },
               })
             );
@@ -59,25 +60,6 @@ function App() {
 
     return () => unsubscribe();
   }, [auth.currentUser?.uid]);
-
-  // todo handle tab close
-  // useEffect(() => {
-  //   const handleTabClose = (event) => {
-  //     event.preventDefault(); // Necessary for some browsers to show the confirmation
-  //     // Custom message (shown only in some browsers)
-  //     event.returnValue = "Are you sure you want to leave?";
-  //     // Perform your action (e.g., saving data, cleaning up resources, etc.)
-  //     console.log("Tab is closing!");
-  //   };
-
-  //   // Add event listener
-  //   window.addEventListener("beforeunload", handleTabClose);
-
-  //   // Cleanup event listener on unmount
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleTabClose);
-  //   };
-  // }, []);
 
   return <Outlet />;
 }

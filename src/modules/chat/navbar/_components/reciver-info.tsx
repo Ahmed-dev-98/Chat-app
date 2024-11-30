@@ -7,6 +7,8 @@ import { selectAuth } from "@/store/slices/auth.slice";
 import { selectReciver } from "@/store/slices/reciver.slice";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { CiImageOn } from "react-icons/ci";
+
 const ReciverInfo = () => {
   const reciver = useAppSelector(selectReciver);
   const signedUser = useAppSelector(selectAuth);
@@ -46,7 +48,13 @@ const ReciverInfo = () => {
         <p className="text-xl font-semibold">{reciver.displayName}</p>
         <p className="text-sm font-semibold text-gray-500">{reciver.email}</p>
       </div>
-      <div className="w-full  grid grid-cols-2 lg:grid-cols-3 gap-1 overflow-y-scroll  items-start justify-start h-[calc(100%-100px)] lg:h-[calc(100%-250px)]">
+      {!media?.length && (
+        <p className="w-full text-xs mx-auto h-full flex flex-col gap-2 border-t justify-center items-center  text-center text-gray-400">
+          <CiImageOn size={180} />
+          <span>No media yet</span>
+        </p>
+      )}
+      <div className="w-full border-t py-2 no-visible-scrollbar  grid grid-cols-2 lg:grid-cols-3 gap-1 overflow-y-scroll  items-start justify-start h-[calc(100%-100px)] lg:h-[calc(100%-250px)]">
         {media?.map((item) => (
           <ImageDialog className="rounded-md  h-[100px]" imgSrc={item}>
             <img

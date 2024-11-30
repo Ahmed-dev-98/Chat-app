@@ -2,14 +2,15 @@ import { IUser } from "@/app/types/types";
 import { Button } from "@/components/ui/button";
 import NewMessageDialog from "../../sidebar/_components/new-message-dialog";
 import ContactsInfo from "../../navbar/_components/contacts-info";
+import logo from "@/assets/logo.jpg";
 
 export const ChatLandingScreen = ({ users }: { users: IUser[] }) => {
   return (
     <div className="flex flex-col items-center lg:w-[75%] w-full h-full lg:ml-[25%] justify-center min-h-screen bg-gray-400">
       <img
-        src="https://via.placeholder.com/150"
-        alt="No messages illustration"
-        className="w-[300px] h-[300px] mb-6"
+        src={logo}
+        alt="Talkiee logo"
+        className="w-[300px] h-[300px] mb-6 rounded-md"
       />
       <h4>you have no messages</h4>
       <p className="text-gray-600 text-center text-lg mb-4">
