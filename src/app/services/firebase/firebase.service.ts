@@ -64,7 +64,6 @@ class firebaseService {
                 FIREBASE_COLLECTIONS.CHAT_ROOMS,
                 chatRoomId,
                 FIREBASE_COLLECTIONS.CHAT_MEDIA,
-
                 "media"
             );
             try {
@@ -125,10 +124,27 @@ class firebaseService {
 
     public async uploadMedia(imageUploaderId: string, media: File, targetedFolder: string) {
         const storage = getStorage();
-        const imgRef = ref(storage, `${targetedFolder}/${imageUploaderId}.${media.type.split("/")[1]}`);
+        const imgRef = ref(storage, `${targetedFolder}/${imageUploaderId + Date.now()}.${media.type.split("/")[1]}`);
         await uploadBytes(imgRef, media);
         const imgUrl = await getDownloadURL(imgRef);
         return imgUrl
+    }
+
+    public async getAllChatRoomMedia(senderId: string, recipientId: string) {
+        const chatRoomId = getChatRoomId(senderId, recipientId);
+        const mediaCollection = collection(db,
+            FIREBASE_COLLECTIONS.CHAT_ROOMS,
+            chatRoomId,
+            FIREBASE_COLLECTIONS.CHAT_MEDIA,
+        );
+        const querySnapshot = await getDocs(mediaCollection);
+        const mediaData = querySnapshot.docs.map(
+            (doc) =>
+            ({
+                ...doc.data(),
+            } as DocumentData)
+        );
+        return mediaData[0]?.media
     }
     public async signInWithGoogle() {
         return await signInWithPopup(auth, provider).then(async (data) => {

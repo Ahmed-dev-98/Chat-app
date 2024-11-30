@@ -67,8 +67,8 @@ const Sidebar = ({ users }: { users: IUser[] }) => {
   };
 
   return (
-    <div className="w-[25%] flex flex-col gap-3 h-full  border-r-2 border-gray-300 bg-white ">
-      <div className="w-full min-h-[70px] px-2 bg-[#ededed] flex justify-between items-center">
+    <div className="w-0 md:w-[25%] absolute flex flex-col gap-3 h-full  border-r-2 border-gray-300 bg-white ">
+      <div className="hidden md:flex md:w-full min-h-[70px] px-2 bg-[#ededed]  justify-between items-center">
         <div className="flex items-center justify-start gap-1 ">
           <Avatar className="w-[50px] h-[50px]">
             <AvatarImage

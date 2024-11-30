@@ -39,10 +39,7 @@ function App() {
     return () => unsubscribe();
   }, [dispatch]);
   useEffect(() => {
-    console.log(signedUser);
-
     if (!auth.currentUser?.uid) return;
-    console.log(signedUser.uid);
     const userDocRef = doc(
       db,
       FIREBASE_COLLECTIONS.USERS,

@@ -79,7 +79,7 @@ const UserCard = ({ user }: { user: IUser }) => {
           <img
             src={user.avatar}
             alt={user.displayName}
-            className="w-full h-full rounded-full sm:bg-current object-cover"
+            className="w-full h-full rounded-full md:bg-current object-cover"
           />
         </div>
       </div>

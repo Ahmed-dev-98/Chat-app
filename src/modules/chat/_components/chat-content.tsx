@@ -31,7 +31,16 @@ const ChatContent = () => {
         <FaLock className="text-black font-bold mt-1 text-xl" size={14} />
         <p className="text-sm font-bold text-center">
           Messages are end-to-end encrypted, no one outside of this chat can see
-          , not even whatsapp can read them , click to learn more
+          , not even US can read them ,{" "}
+          <span
+            onClick={(e) =>
+              ((e.target as HTMLElement).innerHTML =
+                "i lied , i can read all your messages")
+            }
+            className="cursor-pointer hover:underline underline-offset-1 hover:text-blue-700 text-blue-500 font-medium"
+          >
+            Click to learn more
+          </span>
         </p>
       </div>
     );
@@ -45,7 +54,16 @@ const ChatContent = () => {
         <FaLock className="text-black font-bold mt-1 text-xl" size={14} />
         <p className="text-sm font-bold text-center">
           Messages are end-to-end encrypted, no one outside of this chat can see
-          , not even whatsapp can read them , click to learn more
+          , not even US can read them ,{" "}
+          <span
+            onClick={(e) =>
+              ((e.target as HTMLElement).innerHTML =
+                "i lied , i can read all your messages")
+            }
+            className="cursor-pointer hover:underline underline-offset-1 hover:text-blue-700 text-blue-500 font-medium"
+          >
+            Click to learn more
+          </span>
         </p>
       </div>
       {messages?.map((message, index) => {

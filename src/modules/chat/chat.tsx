@@ -8,6 +8,7 @@ import useSWR from "swr";
 import { useAppSelector } from "@/store";
 import { selectAuth } from "@/store/slices/auth.slice";
 import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 
 const Chat = () => {
   const signedUser = useAppSelector(selectAuth);
@@ -31,12 +32,25 @@ const Chat = () => {
         {<Sidebar users={users} />}
 
         {!searchParams.get("id") ? (
-          <div className="text-white h-full w-full flex justify-center items-center">
-            no data fount please select chat
+          <div className="flex flex-col items-center w-[75%] justify-center min-h-screen bg-gray-400">
+            <img
+              src="https://via.placeholder.com/150"
+              alt="No messages illustration"
+              className="w-[300px] h-[300px] mb-6"
+            />
+            <h4>you have no messages</h4>
+            <p className="text-gray-600 text-center text-lg mb-4">
+              You inbox is empty send a message to a friend to get started
+            </p>
+
+            <Button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+              New Message
+            </Button>
           </div>
         ) : (
-          <div className="w-[75%] h-full  flex flex-col  justify-between">
+          <div className="md:w-[75%] w-full h-full md:ml-[25%]  flex flex-col  justify-between">
             <ChatNavbar
+              users={users}
               user={users.find((user) => user.uid === searchParams.get("id"))}
             />
             <ChatContent />
