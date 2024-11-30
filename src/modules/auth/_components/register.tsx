@@ -120,6 +120,13 @@ const Register = () => {
             className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
           >
             Sign Up
+          </Button>{" "}
+          <Button
+            onClick={() => navigate(ROUTES.HOME)}
+            type="button"
+            className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          >
+            Home
           </Button>
           {error && <p className="text-red-500 w-full text-center">{error}</p>}
           {success && (
