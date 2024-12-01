@@ -7,7 +7,7 @@ const LandingPage = () => {
   return (
     <div>
       {/* Navbar */}
-      <header className="bg-slate-700 shadow-md">
+      <header className="bg-slate-700 shadow-md ">
         <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <img src={logo} className="w-12 rounded-full" alt="" />
@@ -32,7 +32,7 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gray-50">
+      <section className="bg-gray-300">
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-4xl font-extrabold text-gray-800 sm:text-5xl">
             Seamless Conversations, Simplified
@@ -61,7 +61,7 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="bg-white py-16">
+      <section className="bg-white py-16 ">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-800">
             Why Choose Talkiee?
@@ -109,7 +109,7 @@ const LandingPage = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="bg-gray-50 py-16">
+      <section className="bg-gray-300 py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-800">
             How It Works
@@ -156,12 +156,12 @@ const LandingPage = () => {
       </section>
 
       {/* Call-to-Action Section */}
-      <section className="bg-green-600 py-16">
+      <section className="bg-white text-black py-16 ">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white">
+          <h2 className="text-3xl font-bold ">
             Ready to Get Started?
           </h2>
-          <p className="text-white text-lg mt-4">
+          <p className=" text-lg mt-4">
             Join Talkiee today and connect with your world effortlessly.
           </p>
           <div className="mt-6 space-x-4">
@@ -174,7 +174,7 @@ const LandingPage = () => {
             <Button
               onClick={() => navigate(ROUTES.LOGIN)}
               variant="default"
-              className="text-black hover:text-white bg-white border-white px-6 py-3"
+              className="text-black  bg-white border-white px-6 py-3"
             >
               Sign In
             </Button>
