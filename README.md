@@ -65,13 +65,13 @@ This project is built with **Vite** and leverages several third-party services l
    **Firebase Configuration:**
 
    ```env
-   VITE_API_KEY=AIzaSyAA3OeYa0YDdNYdnSabs7BUQdEPpIc45IA
-   VITE_AUTH_DOMAIN=task-management-7913d.firebaseapp.com
-   VITE_PROJECT_ID=task-management-7913d
-   VITE_STORAGE_BUCKET=task-management-7913d.appspot.com
-   VITE_MESSAGING_SENDER_ID=945678658013
-   VITE_APP_ID=1:945678658013:web:a51b24b002f802b68fee34
-   VITE_MEASUREMENT_ID=G-JBZM1Z0W3K
+     VITE_API_KEY=YOUR_API_KEY
+     VITE_AUTH_DOMAIN=YOUR_AUTH_DOMAIN
+     VITE_PROJECT_ID=YOUR_PROJECT_ID
+     VITE_STORAGE_BUCKET=YOUR_STORAGE_BUCKET
+     VITE_MESSAGING_SENDER_ID=YOUR_MESSAGING_SENDER_ID
+     VITE_APP_ID=YOUR_APP_ID
+     VITE_MEASUREMENT_ID=YOUR_MEASUREMENT_ID
    ```
 
 4. Run the app (default port: 5173):
